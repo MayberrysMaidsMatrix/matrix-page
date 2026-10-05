@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mayberry's Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  color-scheme:dark;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#000000; --card:#10161A; --ink:#EAF2F4; --muted:#A3B6BF; --line:#2A3A43;
+  --aqua:#4CC9C9; --aqua-soft:#12383B; --sun:#FFC53D; --sun-text:#3A2B00;
+  --coral:#FF8A7A; --coral-soft:#3A1F1B; --green:#6FD6A0; --green-soft:#12301F;
+  --amber-soft:#3A2E0B; --amber:#FFD36E; --desk:#0A0F12;
+}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito Sans','Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:'Bricolage Grotesque','Trebuchet MS','Segoe UI',sans-serif;margin:0;line-height:1.15}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--aqua);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 18px 56px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--muted)}
+.save{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
+.dot.off{background:var(--coral)}
+
+/* the floor: the team */
+.floor{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 20px 24px}
+.floor h2{font-size:22px;font-weight:800}
+.lede{margin:6px 0 18px;color:var(--muted);max-width:62ch}
+.desks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.desks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.desk{background:var(--desk);border:1px solid var(--line);border-radius:18px;padding:14px 12px 14px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.desk.soon{opacity:.62}
+.desk svg{display:block}
+.desk h3{font-size:18px;font-weight:800;margin-top:8px}
+.role{color:var(--muted);font-size:14px;margin-top:1px}
+.bubble{position:relative;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 11px;font-size:14px;line-height:1.4;width:100%;min-height:62px;display:flex;align-items:center;justify-content:center}
+.bubble::before{content:"";position:absolute;top:-7px;left:50%;width:12px;height:12px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+.bubble strong{font-weight:700}
+
+/* morning meeting */
+.meeting{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mhead h2{font-size:22px;font-weight:800}
+.mbtns{display:flex;gap:8px;flex-wrap:wrap}
+.mbody{margin-top:14px;display:grid;gap:12px}
+.turn{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start;background:var(--desk);border:1px solid var(--line);border-radius:16px;padding:12px}
+.mt-av svg{width:56px;height:56px;display:block}
+.turn h3{font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.turn p{margin:5px 0 0}
+.turn .nextline{color:var(--muted)}
+.ask{margin-top:8px;background:var(--coral-soft);border-radius:12px;padding:8px 11px;font-weight:600}
+.ask b{display:block;font-size:13px;color:var(--coral);margin-bottom:2px}
+.ok{margin-top:8px;color:var(--green);font-weight:700;font-size:14px}
+.hear{font-size:13px;padding:3px 10px}
+.today3{background:var(--amber-soft);border-radius:16px;padding:12px 14px}
+.today3 h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.today3 ol{margin:0;padding-left:22px}
+.today3 li{margin:4px 0}
+
+
+/* portraits and video-call tiles */
+.pic{position:relative;width:108px;height:108px}
+.pic svg{width:108px;height:108px;border-radius:50%;display:block;box-shadow:0 0 0 3px var(--card),0 0 0 4px var(--line)}
+.pic.here::after{content:"";position:absolute;right:5px;bottom:7px;width:17px;height:17px;border-radius:50%;background:var(--green);border:3px solid var(--desk)}
+.mt-av svg{border-radius:50%}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{position:relative;display:block;padding:0;border:3px solid transparent;border-radius:16px;overflow:hidden;aspect-ratio:4/3;background:#1d2b36;cursor:pointer}
+.tile .tpic{position:absolute;inset:0}
+.tile .tpic svg{width:100%;height:100%;display:block}
+.tile.talking{border-color:var(--sun);box-shadow:0 0 0 3px rgba(255,197,61,.35)}
+.tile .cap{position:absolute;left:8px;bottom:8px;background:rgba(8,22,32,.74);color:#fff;border-radius:8px;padding:3px 9px;font-size:13px;font-weight:700}
+.tile.you{cursor:default;background:var(--aqua-soft);display:flex;align-items:center;justify-content:center}
+.tile.you .ini{width:64px;height:64px;border-radius:50%;background:var(--aqua);color:#fff;font-family:'Bricolage Grotesque','Trebuchet MS',sans-serif;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center}
+
+
+.photo{position:relative;width:100%;height:100%;overflow:hidden}
+.photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 14%}
+.pic .photo{width:108px;height:108px;border-radius:50%;box-shadow:0 0 0 3px var(--card),0 0 0 4px var(--line)}
+.mt-av .photo{width:56px;height:56px;border-radius:50%}
+.tile .tpic .photo{position:absolute;inset:0}
+.tile .tpic .photo img{object-position:50% 0}
+
+.gear{margin-left:10px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.gear:hover{border-color:var(--aqua);color:var(--aqua)}
+#adminDlg{width:min(780px,calc(100vw - 24px))}
+
+.does{font-size:13.5px;line-height:1.4;color:var(--muted);margin-top:8px}
+
+/* action buttons */
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0}
+.big{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:18px 20px;border-radius:18px;border:2px solid transparent;cursor:pointer;min-height:92px}
+.big b{font-family:'Bricolage Grotesque','Trebuchet MS',sans-serif;font-size:21px;font-weight:800;line-height:1.15}
+.big span{font-size:14px;opacity:.9}
+.big.primary{background:var(--sun);color:var(--sun-text)}
+.big.second{background:var(--aqua);color:#06252A}
+.big.third{background:var(--card);border-color:var(--aqua);color:var(--ink)}
+.big:hover{filter:brightness(1.04)}
+.big:active{transform:translateY(1px)}
+.big:disabled{opacity:.5;cursor:not-allowed}
+
+/* layout below */
+.grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.card h2{font-size:21px;font-weight:800;margin-bottom:4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 12px}
+
+/* calls */
+.call{border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:10px;background:var(--desk)}
+.call .nm{font-weight:700}
+.call .why{font-size:14px;color:var(--muted);margin:2px 0 8px}
+.call .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tel{color:var(--aqua);font-weight:700;text-decoration:none}
+.tel:hover{text-decoration:underline}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--aqua)}
+.btn.solid{background:var(--aqua);border-color:var(--aqua);color:#06252A}
+.btn.sun{background:var(--sun);border-color:var(--sun);color:var(--sun-text)}
+.empty{color:var(--muted);padding:14px;border:1px dashed var(--line);border-radius:14px;text-align:center}
+
+/* matrix */
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;cursor:pointer;font-weight:600;font-size:14px}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.search{flex:1;min-width:160px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 11px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th{text-align:left;font-size:13px;color:var(--muted);font-weight:700;padding:9px 10px;border-bottom:1px solid var(--line);background:var(--desk)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
+tr:last-child td{border-bottom:0}
+.biz{background:none;border:0;padding:0;text-align:left;cursor:pointer;font-weight:700;font-size:15px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.biz:hover{text-decoration-color:var(--aqua)}
+.chip{display:inline-block;font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--aqua-soft);color:var(--aqua);margin-top:4px}
+.chip.win{background:var(--amber-soft);color:var(--amber)}
+.chip.pm{background:var(--green-soft);color:var(--green)}
+.chip.client{background:var(--desk);color:var(--muted);border:1px solid var(--line)}
+.small{font-size:13.5px;color:var(--muted)}
+.need{color:var(--coral);font-weight:700;font-size:13.5px}
+.score{display:inline-block;min-width:38px;text-align:center;font-weight:800;border-radius:9px;padding:3px 7px;background:var(--aqua-soft);color:var(--aqua)}
+.score.hi{background:var(--green-soft);color:var(--green)}
+.score.lo{background:var(--desk);color:var(--muted);border:1px solid var(--line)}
+.st{font-weight:600}
+.due{color:var(--coral);font-weight:700}
+
+/* dialogs */
+dialog{border:1px solid var(--line);border-radius:20px;padding:0;background:var(--card);color:var(--ink);width:min(580px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(8,20,30,.55)}
+.dlg{padding:20px 20px 18px}
+.dlg h2{font-size:23px;font-weight:800;margin-bottom:4px}
+.dlg .sub{margin-bottom:14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.fields{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:700}
+.f.full{grid-column:1/-1}
+.f input,.f select,.f textarea{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 10px;font-weight:400;font-size:16px}
+.f textarea{min-height:76px;resize:vertical}
+.hint{font-weight:400;color:var(--muted);font-size:13px}
+.check{display:flex;gap:9px;align-items:center;font-weight:600;font-size:15px}
+.check input{width:20px;height:20px}
+.foot{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.err{color:var(--coral);font-weight:700;font-size:14px;margin-top:10px;min-height:1px}
+.history{margin-top:14px;border-top:1px solid var(--line);padding-top:10px;font-size:14px;max-height:150px;overflow:auto}
+.history div{margin-bottom:6px}
+
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:calc(100vw - 32px)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><rect width="52" height="52" rx="14" fill="#127F80"/><path d="M13 38V15l13 14 13-14v23" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 6l1.6 4.4L46 12l-4.4 1.6L40 18l-1.6-4.4L34 12l4.4-1.6z" fill="#FFC53D"/></svg>
+      <div><h1>Mayberry's Matrix</h1><p id="greeting">Welcome back.</p></div>
+    </div>
+    <div class="save"><span class="dot off" id="dot"></span><span id="saveText">Connecting&hellip;</span><button class="gear" id="gearBtn" hidden aria-label="Team access settings" title="Team access"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+  </header>
+
+  <section class="card" id="denied" hidden></section>
+
+  <section class="floor" aria-labelledby="teamH">
+    <h2 id="teamH">Your team today</h2>
+    <p class="lede">Your AI coworkers do the finding, ranking, writing, and reminding. You make the calls and add what only a phone call can find, like the name of the person who schedules cleaning.</p>
+    <div class="desks" id="desks"></div>
+  </section>
+
+  <section class="meeting" aria-labelledby="mtgH">
+    <div class="mhead">
+      <div><h2 id="mtgH">Morning meeting</h2><p class="sub" style="margin:2px 0 0">Everyone shares where they are, what is next, and whether they need your help.</p></div>
+      <div class="mbtns">
+        <button class="btn solid" id="mtgToggle" aria-expanded="false">Start the meeting</button>
+        <button class="btn" id="mtgHear" hidden>Hear it</button>
+        <button class="btn" id="mtgStop" hidden>Stop</button>
+      </div>
+    </div>
+    <div class="mbody" id="mtgBody" hidden></div>
+  </section>
+
+  <section class="actions" aria-label="Add or log information">
+    <button class="big primary" id="addPM"><b>Add a property manager</b><span>A company that manages rental homes</span></button>
+    <button class="big second" id="addOffice"><b>Add an office or janitorial lead</b><span>Medical, law, exhibit builder, or any office</span></button>
+    <button class="big third" id="logAny"><b>Log a call or email</b><span>Pick a lead and record what happened</span></button>
+  </section>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="callsH">
+      <h2 id="callsH">Calls to make today</h2>
+      <p class="sub">Lucy put the best leads first.</p>
+      <div id="calls"></div>
+    </section>
+    <section class="card" aria-labelledby="mxH">
+      <h2 id="mxH">The Matrix</h2>
+      <div class="tools">
+        <div class="tabs" id="tabs" role="group" aria-label="Filter by type"></div>
+        <input class="search" id="search" type="search" placeholder="Search by name, phone, or email" aria-label="Search leads">
+      </div>
+      <div class="tablewrap"><table id="matrix"></table></div>
+    </section>
+  </div>
+</div>
+
+<dialog id="leadDlg" aria-labelledby="leadTitle"></dialog>
+<dialog id="adminDlg" aria-labelledby="adminTitle"></dialog>
+<dialog id="logDlg" aria-labelledby="logTitle"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const PH = /*PHOTOS_PLACEHOLDER*/ {};
+
+/* ---------- tiny helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+function h(tag, props, ...kids){
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})){
+    if (v==null || v===false) continue;
+    if (k==='class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k==='value'||k==='checked'||k==='disabled'||k==='selected') el[k]=v;
+    else if (k==='html') el.innerHTML = v;
+    else el.setAttribute(k, v===true?'':v);
+  }
+  for (const kid of kids.flat()){
+    if (kid==null || kid===false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+const pad = n => String(n).padStart(2,'0');
+const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayStr = () => iso(new Date());
+const addDays = n => { const d=new Date(); d.setDate(d.getDate()+n); return iso(d); };
+const fmtDate = s => { if(!s) return ''; const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString(undefined,{month:'short',day:'numeric'}); };
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),3200); }
+
+/* ---------- service area (from Gil's rules) ---------- */
+const TIGHT = new Set(('89101 89102 89103 89104 89106 89107 89109 89117 89118 89119 89120 89121 89146 89147 89169 '+
+  '89108 89113 89128 89129 89134 89135 89139 89144 89145 89148 89123 89012 89014 89015 89052 89074 89030 89031 89032').split(' '));
+const OUTER = new Set('89011 89044 89138 89141 89178 89149 89131 89166 89179 89143 89084 89086'.split(' '));
+const EXCLUDED = new Set('89002 89005 89024 89027 89029'.split(' '));
+function area(lead){
+  const z = (lead.zip||'').trim();
+  if (!/^\d{5}$/.test(z)) return 'unknown';
+  if (EXCLUDED.has(z)) return 'out';
+  if (TIGHT.has(z)) return 'in';
+  if (OUTER.has(z)) return 'outer';
+  return 'out';
+}
+
+/* ---------- Lucy's score (Gil's ranking: reach, type, size, closeness) ---------- */
+function score(l){
+  let reach = 0;
+  if (l.contactName) reach += 10;
+  if (l.email) reach += 15;
+  if (l.phone) reach += 15;
+  const t = l.type||'';
+  let type = 5;
+  if (/medical|law|exhibit|^property manager$/i.test(t)) type = 30;
+  else if (/property management office/i.test(t)) type = 25;
+  else if (/office/i.test(t)) type = 15;
+  const size = ({large:20, medium:12, small:6})[l.space] ?? 4;
+  const a = area(l);
+  let close = 3;
+  if (a==='in') close = 10;
+  else if (a==='outer') close = (l.lane==='janitorial') ? 0 : 10;
+  else if (a==='out') close = 0;
+  return Math.min(100, reach+type+size+close);
+}
+
+/* ---------- labels ---------- */
+const LANES = { janitorial:'Office janitorial', pm:'Property manager', winback:'Win-back', client:'Current client' };
+const STATUS = { new:'New', progress:'In touch', quote:'Quote or walkthrough', won:'Won', notnow:'Not now', no:'No thanks' };
+const OFFICE_TYPES = ['Medical office','Law office','Exhibit builder or manufacturing','Property management office','Other office'];
+
+/* ---------- James's follow-up rhythm ---------- */
+function nextDate(touches, result){
+  if (result==='no') return '';
+  if (result==='notnow') return addDays(90);
+  if (result==='interested') return addDays(3);
+  if (touches<=1) return addDays(3);   // email on day 4
+  if (touches===2) return addDays(4);  // call on day 8
+  if (touches===3) return addDays(6);  // final email on day 14
+  return addDays(90);                  // then every three months
+}
+
+/* ---------- portraits ---------- */
+let avN = 0;
+function portrait(c){
+  const k = 'p'+(avN++);
+  const sk=c.skin, sh=c.shade, hr=c.hair;
+  const back = {
+    bob:'<path d="M56 86C50 40 76 22 100 22s50 18 44 64c-1 26-4 42-14 54H70c-10-12-13-28-14-54z" fill="'+hr+'"/>',
+    bun:'<circle cx="100" cy="24" r="18" fill="'+hr+'"/><path d="M60 84C56 46 78 32 100 32s44 14 40 52c-2 14-4 22-8 28H68c-4-6-6-14-8-28z" fill="'+hr+'"/>',
+    short:'', wave:''
+  }[c.style];
+  const front = {
+    short:'<path d="M62 78C60 50 78 40 100 40s40 10 38 38c-6-14-18-20-38-20S68 64 62 78z" fill="'+hr+'"/>',
+    bun:'<path d="M61 82C57 46 80 33 100 33s43 13 39 49c-5-19-17-31-39-31S66 63 61 82z" fill="'+hr+'"/><path d="M78 44Q100 34 124 44" stroke="'+c.hl+'" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/>',
+    bob:'<path d="M59 88C54 44 78 29 102 29s46 16 40 59c-4-24-16-39-40-41-14 8-34 18-43 41z" fill="'+hr+'"/><path d="M80 38Q104 30 128 40" stroke="'+c.hl+'" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>',
+    wave:'<path d="M61 82C56 45 78 31 100 31s44 14 39 51c-3-19-13-31-27-36-8 6-18 4-26 0-13 6-22 17-25 36z" fill="'+hr+'"/><path d="M76 40Q98 31 122 40" stroke="'+c.hl+'" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>'
+  }[c.style];
+  const extra = {
+    cap:'<path d="M59 72C58 40 78 28 100 28s42 12 41 44z" fill="'+c.accent+'"/><path d="M59 70q41-10 92 4c-2 8-12 9-26 6-22-4-46-3-66 3z" fill="#E5AE20"/><circle cx="100" cy="27" r="3" fill="#E5AE20"/>',
+    glasses:'<g fill="rgba(255,255,255,.14)" stroke="#262626" stroke-width="2.4"><circle cx="82" cy="84" r="13.5"/><circle cx="118" cy="84" r="13.5"/><path d="M95.5 83q4.5-4 9 0"/><path d="M68.5 82L60 80M131.5 82L140 80"/></g><circle cx="61" cy="101" r="2.6" fill="#E3BE62"/><circle cx="139" cy="101" r="2.6" fill="#E3BE62"/>',
+    pencil:'<g transform="rotate(28 138 66)"><rect x="135" y="40" width="5" height="30" rx="1.2" fill="'+c.accent+'"/><path d="M135 70h5l-2.5 7z" fill="#F1D2A8"/><rect x="135" y="40" width="5" height="4" fill="#d4d4d4"/></g><circle cx="61" cy="101" r="2.6" fill="#E3BE62"/><circle cx="139" cy="101" r="2.6" fill="#E3BE62"/>',
+    headset:'<path d="M58 84C54 44 78 28 100 28s46 16 42 56" fill="none" stroke="'+c.accent+'" stroke-width="5" stroke-linecap="round"/><rect x="52" y="78" width="11" height="22" rx="5" fill="'+c.accent+'"/><rect x="137" y="78" width="11" height="22" rx="5" fill="'+c.accent+'"/><path d="M57 98q4 26 36 30" fill="none" stroke="'+c.accent+'" stroke-width="3" stroke-linecap="round"/><circle cx="95" cy="128" r="4" fill="'+c.accent+'"/>'
+  }[c.extra]||'';
+  const eyes = [82,118].map(function(x){ return ''+
+    '<ellipse cx="'+x+'" cy="84" rx="8.6" ry="4.7" fill="#fff"/><circle cx="'+x+'" cy="84.3" r="3.8" fill="'+c.eye+'"/><circle cx="'+x+'" cy="84.3" r="1.9" fill="#111"/><circle cx="'+(x+1.4)+'" cy="82.9" r="1.1" fill="#fff"/>'+
+    '<path d="M'+(x-9.5)+' 84.5Q'+x+' 76.5 '+(x+9.5)+' 84.5" stroke="#2a1a14" stroke-width="2.1" fill="none" stroke-linecap="round"/>'+
+    '<path d="M'+(x-7)+' 88Q'+x+' 91 '+(x+7)+' 88" stroke="'+sh+'" stroke-width="1.1" fill="none" opacity=".6"/>'; }).join('');
+  const brows = '<path d="M70 72Q82 65 94 70" stroke="'+c.brow+'" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M106 70Q118 65 130 72" stroke="'+c.brow+'" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+  const nose = '<path d="M100 88C98 98 95 102 94 106q6 4 12 0c-1-4-4-8-6-18" fill="none" stroke="'+sh+'" stroke-width="1.6" opacity=".7" stroke-linecap="round" stroke-linejoin="round"/>';
+  const mouth = '<path d="M87 114Q94 110.5 100 112.5Q106 110.5 113 114Q100 119 87 114z" fill="'+c.lip+'"/><path d="M89 115Q100 127 111 115Q100 121 89 115z" fill="'+c.lip2+'"/><path d="M91 115.2Q100 121.5 109 115.2Q100 118 91 115.2z" fill="#fff" opacity=".9"/>';
+  return '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMin slice" role="img" aria-hidden="true">'+
+    '<defs><linearGradient id="'+k+'b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.bg1+'"/><stop offset="1" stop-color="'+c.bg2+'"/></linearGradient>'+
+    '<radialGradient id="'+k+'s" cx="50%" cy="36%" r="72%"><stop offset="0" stop-color="'+c.light+'"/><stop offset="1" stop-color="'+sk+'"/></radialGradient></defs>'+
+    '<rect width="200" height="200" fill="url(#'+k+'b)"/>'+
+    '<circle cx="26" cy="44" r="24" fill="#fff" opacity=".2"/><circle cx="172" cy="58" r="32" fill="#fff" opacity=".14"/><circle cx="150" cy="20" r="13" fill="#fff" opacity=".22"/><circle cx="40" cy="120" r="14" fill="#fff" opacity=".12"/>'+
+    back+
+    '<path d="M12 200C14 164 52 150 100 150s86 14 88 50z" fill="'+c.outfit+'"/>'+
+    '<path d="M82 150L100 190 118 150z" fill="'+c.shirt+'"/>'+
+    '<path d="M83 116v36q17 14 34 0v-36z" fill="'+sk+'"/><path d="M83 126q17 18 34 0v-10H83z" fill="'+sh+'" opacity=".5"/>'+
+    '<path d="M83 150L68 160l26 36zM117 150l15 10-26 36z" fill="'+c.outfit2+'"/>'+
+    '<ellipse cx="61" cy="90" rx="5.8" ry="10.5" fill="'+sk+'"/><ellipse cx="139" cy="90" rx="5.8" ry="10.5" fill="'+sk+'"/>'+
+    '<path d="M62 80C62 48 80 34 100 34s38 14 38 46c0 30-14 50-38 52s-38-22-38-52z" fill="url(#'+k+'s)"/>'+
+    '<path d="M65 96C67 118 82 132 100 132s33-14 35-36c-7 18-19 26-35 26S72 114 65 96z" fill="'+sh+'" opacity=".28"/>'+
+    '<circle cx="76" cy="106" r="9" fill="#E0796E" opacity=".16"/><circle cx="124" cy="106" r="9" fill="#E0796E" opacity=".16"/>'+
+    eyes+brows+nose+mouth+front+extra+
+    '</svg>';
+}
+function silhouette(kind){
+  const id='s'+(avN++);
+  const mark = kind==='leaf'
+    ? '<path d="M128 130c20-4 32-18 34-38-20 2-34 16-34 38z" fill="#1B7A4E"/>'
+    : '<path d="M132 140l24-36 8 6-24 36-10 2z" fill="#FFC53D"/>';
+  return '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMin slice" role="img" aria-hidden="true"><rect width="200" height="200" fill="#BFD2D8"/><path d="M12 200C14 164 52 150 100 150s86 14 88 50z" fill="#8FA7B0"/><path d="M62 80C62 48 80 34 100 34s38 14 38 46c0 30-14 50-38 52s-38-22-38-52z" fill="#8FA7B0"/><text x="100" y="96" text-anchor="middle" font-size="40" font-weight="800" fill="#EAF1F3" font-family="sans-serif">?</text>'+mark+'</svg>';
+}
+function face(p){
+  if (p.photo){ const a=p.av; return '<div class="photo" style="background:linear-gradient(180deg,'+a.bg1+','+a.bg2+')"><img src="'+p.photo+'" alt=""></div>'; }
+  return p.soon ? silhouette(p.soon) : portrait(p.av);
+}
+const TEAM = [
+  { name:'Scout', photo:PH.scout, full:'Scout Hennessy', title:'Vice President, Market Intelligence', role:'Finds new leads', does:'Finds new businesses worth contacting, such as medical offices, law firms, exhibit builders, and property managers, and checks they are inside our service area.', av:{style:'short', extra:'cap', accent:'#FFC53D', skin:'#E3B084', light:'#F1C8A2', shade:'#B97F58', hair:'#3A2A1F', hl:'#6B4C37', brow:'#2C1F17', eye:'#4A3A2A', lip:'#B5645A', lip2:'#9C4F48', outfit:'#127F80', outfit2:'#0D6667', shirt:'#F3F6F7', bg1:'#D3F0EC', bg2:'#8FCFCB'} },
+  { name:'Lucy',  photo:PH.lucy, full:'Lucy Marchetti', title:'Head of Client Prioritization', role:'Ranks who to call first', does:'Ranks every lead so you know who to call first, based on how easy they are to reach, the type of business, the size of the space, and the distance.', av:{style:'bun', extra:'glasses', skin:'#9A6544', light:'#B27B57', shade:'#6F4430', hair:'#1D1717', hl:'#5A4646', brow:'#150F0F', eye:'#3B2417', lip:'#8E3F45', lip2:'#732F36', outfit:'#C24A3A', outfit2:'#9D3427', shirt:'#FFF4E8', bg1:'#FBE4DE', bg2:'#E7A89D'} },
+  { name:'Jan',   photo:PH.jan, full:'Jan Whitcombe', title:'Director of Client Communications', role:'Writes the messages', does:'Writes the messages: first emails, follow-ups, and phone scripts. Nothing goes out until Gil approves it.', av:{style:'bob', extra:'pencil', accent:'#E2503E', skin:'#F0C8A4', light:'#F9DFC2', shade:'#CC9C78', hair:'#B3B5C2', hl:'#EDEEF4', brow:'#8A8B98', eye:'#5A86A8', lip:'#C0686C', lip2:'#A55459', outfit:'#243B57', outfit2:'#1A2C43', shirt:'#FFE9B8', bg1:'#FFEFBF', bg2:'#F2C766'} },
+  { name:'James', photo:PH.james, full:'James Okonkwo', title:'Director of Client Relations', role:'Keeps follow-ups on time', does:'Keeps follow-ups on schedule: day 4, day 8, day 14, then every three months. He stops as soon as someone says no.', av:{style:'wave', extra:'headset', accent:'#14304A', skin:'#C58F66', light:'#D9A57D', shade:'#8F6044', hair:'#17120F', hl:'#5A463B', brow:'#0F0B09', eye:'#3A2A1E', lip:'#9B5548', lip2:'#7F433A', outfit:'#3D5873', outfit2:'#2D4358', shirt:'#E9EEF3', bg1:'#D8E4F2', bg2:'#9DB6D2'} },
+  { name:'Sage',  photo:PH.sage, av:{bg1:'#DDF0DA', bg2:'#A4D19D'}, full:'Sage Lindqvist', title:'Head of Community and Brand', role:'Community voice', does:'Looks after our name in the community: Google reviews, replies, and our local presence.', soon:'leaf', note:'Joining soon, for reviews and community.' },
+  { name:'Finn',  photo:PH.finn, av:{bg1:'#FFE9C7', bg2:'#F5B97A'}, full:'Finn Calloway', title:'Creative Director, Content', role:'Blog and social posts', does:'Creates the blog posts and social media posts that keep Mayberry\'s Maids visible online.', soon:'pen', note:'Joining soon, for blog and social posts.' },
+  { name:'Howard', photo:PH.howard, av:{bg1:'#E3E0F5', bg2:'#B3ABE0'}, full:'Howard Pemberton', title:'Head of Web and Digital Experience', role:'Runs the website', does:'Looks after the website: updates, speed, and making sure customers can find us and get in touch.', soon:'gear', note:'Joining soon, for the website.' },
+  { name:'Patty', photo:PH.patty, av:{bg1:'#FCE4D4', bg2:'#F0A98A'}, full:'Patty Donnelly', title:'Director of Partnerships and Listings', role:'Finds places to add our link', does:'Finds places that can link to our website, like chambers of commerce and trade groups, to help us show up in local searches.', soon:'link', note:'Joining soon, for finding places to list our link.' }
+];
+
+/* ---------- state ---------- */
+let meName = '', canWrite = false, role = '', users = [], activity = [], leads = [], loaded = false, filter = 'all', query = '';
+
+/* ---------- talking to Google (Apps Script) ---------- */
+function callServer(fn){
+  const args = Array.prototype.slice.call(arguments,1);
+  return new Promise(function(resolve,reject){
+    const r = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+    r[fn].apply(r,args);
+  });
+}
+function errText(e){
+  const m = (e && e.message) ? String(e.message) : '';
+  return m.replace(/^Error:\s*/,'') || 'That did not save. Check your connection and try again.';
+}
+function applyState(st){
+  if (st && st.denied){ showDenied(st.email); return st; }
+  role = st.me.role; meName = st.me.name || st.me.email;
+  canWrite = (role==='Admin' || role==='Staff');
+  if (st.users) users = st.users;
+  if (st.activity) activity = st.activity;
+  leads = st.leads || [];
+  loaded = true;
+  greet(meName);
+  setConn(true, 'Signed in as '+meName+' ('+role+')');
+  setButtons(); render();
+  return st;
+}
+// The forms below were written against a tiny "database"; this version saves through Google instead.
+const db = { collection(){ return {
+  add(d){ return callServer('createLead', d).then(applyState); },
+  doc(id){ return { update(d){ return callServer('updateLead', id, d).then(applyState); } }; }
+}; } };
+function showDenied(email){
+  document.querySelectorAll('.floor,.meeting,.actions,.grid').forEach(function(e){ e.hidden = true; });
+  const box = $('#denied'); box.hidden = false; box.replaceChildren(
+    h('h2',{},'This account does not have access yet'),
+    h('p',{}, email ? 'You are signed in as '+email+'.' : 'Sign in with your company Google account.'),
+    h('p',{},'Ask Gil to add you to the Matrix, then reload this page.'));
+  setConn(false,'No access');
+}
+
+/* ---------- derived ---------- */
+const active = l => l.status!=='won' && l.status!=='no';
+function dueList(){
+  const t = todayStr();
+  return leads.filter(l => active(l) && (
+      (l.nextFollowUp && l.nextFollowUp<=t) || ((l.touches||0)===0 && !l.nextFollowUp)
+    )).sort((a,b)=>score(b)-score(a));
+}
+
+/* ---------- rendering ---------- */
+function renderDesks(){
+  const box = $('#desks'); box.replaceChildren();
+  const act = leads.filter(active);
+  const needName = act.filter(l=>!l.contactName).length;
+  const due = dueList();
+  const t = todayStr();
+  const overdue = act.filter(l=>l.nextFollowUp && l.nextFollowUp<t).length;
+  const waiting = act.filter(l=>(l.touches||0)===0 && l.status==='new').length;
+  const top = due[0];
+  const say = {
+    Scout: !loaded ? 'Looking at the list.' : needName ? [h('strong',{},needName+' lead'+(needName===1?'':'s')),' still need a contact name. A quick call can find it.'] : 'Every lead has a contact name.',
+    Lucy: !loaded ? 'Sorting the list.' : top ? ['Call ',h('strong',{},top.business),' first today.'] : 'Nothing is due. Add a lead and I will rank it.',
+    Jan: !loaded ? 'Warming up.' : waiting ? [h('strong',{},waiting+' lead'+(waiting===1?'':'s')),' have not had a first message yet. Ask Gil to have drafts written.'] : 'Every lead has had a first message.',
+    James: !loaded ? 'Checking the calendar.' : due.length ? [h('strong',{},due.length+' follow-up'+(due.length===1?'':'s')),' due today'+(overdue?', '+overdue+' late.':'.')] : 'No follow-ups are due today.'
+  };
+  for (const p of TEAM){
+    const d = h('div',{class:'desk'+(p.soon && !p.photo ? ' soon' : '')});
+    d.append(h('div',{class:'pic'+(p.soon?'':' here'),title:p.soon?'':'Here today',html: face(p)}));
+    d.append(h('h3',{},p.full||p.name), h('div',{class:'role'},p.title||p.role), p.does ? h('div',{class:'does'},p.does) : null);
+    d.append(h('div',{class:'bubble'}, h('span',{}, p.soon ? p.note : say[p.name])));
+    box.append(d);
+  }
+}
+
+function contactLines(l){
+  const wrap = h('div',{});
+  if (l.contactName) wrap.append(h('div',{}, l.contactName, l.contactTitle ? h('span',{class:'small'},' ('+l.contactTitle+')') : null));
+  else wrap.append(h('div',{class:'need'},'Needs a contact name'));
+  if (l.phone) wrap.append(h('div',{}, h('a',{class:'tel',target:'_top',href:'tel:'+l.phone.replace(/[^\d+]/g,'')}, l.phone)));
+  if (l.email) wrap.append(h('div',{class:'small'}, l.email));
+  return wrap;
+}
+
+function renderCalls(){
+  const box = $('#calls'); box.replaceChildren();
+  if (!loaded){ box.append(h('div',{class:'empty'},'Loading the Matrix.')); return; }
+  const due = dueList(), t = todayStr();
+  if (!due.length){ box.append(h('div',{class:'empty'},'No calls are due today. Use the buttons above to add a lead.')); return; }
+  for (const l of due.slice(0,8)){
+    let why;
+    if (l.nextFollowUp && l.nextFollowUp<=t) why = 'Follow-up was due '+fmtDate(l.nextFollowUp)+'.';
+    else if (!l.contactName) why = 'No contact name yet. Ask who schedules cleaning.';
+    else why = 'Not contacted yet.';
+    const row = h('div',{class:'row'});
+    if (l.phone) row.append(h('a',{class:'tel',target:'_top',href:'tel:'+l.phone.replace(/[^\d+]/g,'')}, l.phone));
+    row.append(h('button',{class:'btn solid',onclick:()=>openLog(l),disabled:!canWrite},'Log it'));
+    box.append(h('div',{class:'call'}, h('div',{class:'nm'},l.business), h('div',{class:'why'},why), row));
+  }
+  if (due.length>8) box.append(h('div',{class:'small'},'And '+(due.length-8)+' more in the Matrix.'));
+}
+
+function renderTabs(){
+  const box = $('#tabs'); box.replaceChildren();
+  const tabs = [['all','Everyone'],['janitorial','Office janitorial'],['pm','Property managers'],['winback','Win-back'],['client','Current clients']];
+  for (const [k,label] of tabs){
+    const n = k==='all' ? leads.length : leads.filter(l=>l.lane===k).length;
+    box.append(h('button',{class:'tab','aria-pressed':String(filter===k),onclick:()=>{filter=k;render();}}, label+' ('+n+')'));
+  }
+}
+
+function renderTable(){
+  const tb = $('#matrix'); tb.replaceChildren();
+  tb.append(h('thead',{},h('tr',{},
+    ['Business','Contact','Lucy\u2019s score','Status','Next follow-up',''].map(x=>h('th',{scope:'col'},x)))));
+  const body = h('tbody',{});
+  const q = query.trim().toLowerCase();
+  let rows = leads.filter(l => filter==='all' || l.lane===filter);
+  if (q) rows = rows.filter(l => [l.business,l.contactName,l.phone,l.email,l.address].join(' ').toLowerCase().includes(q));
+  rows.sort((a,b)=>score(b)-score(a));
+  if (!loaded){ body.append(h('tr',{},h('td',{colspan:6},'Loading the Matrix.'))); }
+  else if (!rows.length){
+    body.append(h('tr',{},h('td',{colspan:6}, h('div',{class:'empty'}, leads.length ? 'Nothing matches that filter.' : 'The Matrix is empty. Use a button above to add the first lead.'))));
+  }
+  const t = todayStr();
+  for (const l of rows){
+    const s = score(l);
+    const chipCls = 'chip'+(l.lane==='winback'?' win':l.lane==='pm'?' pm':l.lane==='client'?' client':'');
+    const a = area(l);
+    const flag = (l.lane==='janitorial' && a==='outer') ? h('div',{class:'need'},'Outside the nightly janitorial area')
+      : a==='out' ? h('div',{class:'need'},'Outside our service area') : null;
+    const late = l.nextFollowUp && l.nextFollowUp<=t && active(l);
+    body.append(h('tr',{},
+      h('td',{}, h('button',{class:'biz',onclick:()=>openLead({lead:l})},l.business), h('div',{}, h('span',{class:chipCls}, LANES[l.lane]||'Lead')),
+        l.type && l.lane==='janitorial' ? h('div',{class:'small'},l.type) : null, flag),
+      h('td',{}, contactLines(l)),
+      h('td',{}, h('span',{class:'score'+(s>=70?' hi':s<40?' lo':'')}, s)),
+      h('td',{class:'st'}, STATUS[l.status]||'New'),
+      h('td',{}, l.nextFollowUp ? h('span',{class:late?'due':''}, fmtDate(l.nextFollowUp)+(late?' (due)':'')) : h('span',{class:'small'},'None set')),
+      h('td',{}, h('button',{class:'btn',onclick:()=>openLog(l),disabled:!canWrite},'Log'))
+    ));
+  }
+  tb.append(body);
+}
+
+function render(){ renderDesks(); renderCalls(); renderTabs(); renderTable(); renderMeeting(); renderAdmin(); }
+
+/* ---------- forms ---------- */
+function field(label, input, opts={}){
+  return h('label',{class:'f'+(opts.full?' full':'')}, label, opts.hint?h('span',{class:'hint'},opts.hint):null, input);
+}
+function sel(options, value){
+  const s = h('select',{}, options.map(o=>{ const [v,l]=Array.isArray(o)?o:[o,o]; return h('option',{value:v},l); }));
+  s.value = value ?? options[0][0] ?? options[0];
+  return s;
+}
+
+function openLead(opts){
+  const lead = opts.lead || null;
+  const dlg = $('#leadDlg'); dlg.replaceChildren();
+  let lane = lead ? lead.lane : opts.lane;
+  const isOffice = lane==='janitorial' || (lead && lane==='client');
+  const title = lead ? lead.business : (opts.lane==='janitorial' ? 'Add an office or janitorial lead' : 'Add a property manager');
+  const v = lead || {};
+  const f = {};
+  f.business = h('input',{type:'text',value:v.business||'',autocomplete:'off'});
+  f.type = lane==='janitorial' ? sel(OFFICE_TYPES, v.type || OFFICE_TYPES[0]) : null;
+  f.space = lane==='janitorial' ? sel([['','Not sure'],['small','Small'],['medium','Medium'],['large','Large']], v.space||'') : null;
+  f.contactName = h('input',{type:'text',value:v.contactName||'',autocomplete:'off'});
+  f.contactTitle = h('input',{type:'text',value:v.contactTitle||'',autocomplete:'off',placeholder:'Office manager, facilities manager...'});
+  f.phone = h('input',{type:'tel',value:v.phone||'',autocomplete:'off'});
+  f.email = h('input',{type:'email',value:v.email||'',autocomplete:'off'});
+  f.address = h('input',{type:'text',value:v.address||'',autocomplete:'off'});
+  f.zip = h('input',{type:'text',value:v.zip||'',inputmode:'numeric',maxlength:'5',autocomplete:'off'});
+  f.next = h('input',{type:'date',value:v.nextFollowUp||''});
+  f.status = lead ? sel(Object.entries(STATUS), v.status||'new') : null;
+  f.before = (!lead && lane==='pm') ? h('input',{type:'checkbox'}) : null;
+  f.note = h('textarea',{placeholder:'Anything useful. Who answered, what they said, when to call back.'});
+  const err = h('div',{class:'err',role:'alert'});
+
+  const fields = h('div',{class:'fields'},
+    field('Business name', f.business, {full:true}),
+    f.type ? field('What kind of business', f.type) : null,
+    f.space ? field('Size of the space', f.space) : null,
+    field('Contact name', f.contactName, {hint:'The person who schedules or hires cleaning'}),
+    field('Their title', f.contactTitle),
+    field('Direct phone', f.phone),
+    field('Direct email', f.email),
+    field('Address', f.address),
+    field('ZIP code', f.zip),
+    f.status ? field('Status', f.status) : null,
+    field('Next follow-up', f.next),
+    f.before ? h('label',{class:'check f full'}, f.before, 'We have cleaned for this company before') : null,
+    field(lead ? 'Add a note' : 'Note', f.note, {full:true})
+  );
+  const hist = (lead && lead.notes && lead.notes.length) ? h('div',{class:'history'}, lead.notes.slice().reverse().map(n=>h('div',{}, h('strong',{},fmtDate(n.date)+': '), n.text))) : null;
+
+  const save = h('button',{class:'btn sun',onclick:async()=>{
+    const business = f.business.value.trim();
+    const zip = f.zip.value.trim();
+    if (!business){ err.textContent='Enter the business name to save.'; return; }
+    if (zip && !/^\d{5}$/.test(zip)){ err.textContent='ZIP codes have 5 digits.'; return; }
+    save.disabled = true;
+    const data = {
+      lane: (f.before && f.before.checked) ? 'winback' : lane,
+      business, type: f.type ? f.type.value : (lead?lead.type||'':'Property manager'),
+      space: f.space ? f.space.value : (lead?lead.space||'':''),
+      contactName: f.contactName.value.trim(), contactTitle: f.contactTitle.value.trim(),
+      phone: f.phone.value.trim(), email: f.email.value.trim(),
+      address: f.address.value.trim(), zip, nextFollowUp: f.next.value,
+      updatedAt: new Date().toISOString()
+    };
+    const noteText = f.note.value.trim();
+    const notes = lead && lead.notes ? lead.notes.slice() : [];
+    if (noteText) notes.push({date:todayStr(), text:noteText});
+    try{
+      if (lead){ data.status = f.status.value; data.notes = notes; await db.collection('leads').doc(lead.id).update(data); }
+      else { data.status='new'; data.touches=0; data.notes=notes; data.createdAt=new Date().toISOString(); data.source='Added in the Matrix'; await db.collection('leads').add(data); }
+      dlg.close(); toast('Saved: '+business);
+    }catch(e){ save.disabled=false; err.textContent = errText(e); }
+  }},'Save');
+  const cancel = h('button',{class:'btn',onclick:()=>dlg.close()},'Cancel');
+  dlg.append(h('div',{class:'dlg'},
+    h('h2',{id:'leadTitle'},title),
+    h('p',{class:'sub'}, lead ? 'Update what you learned.' : 'Fill in what you know. Everything except the business name can wait.'),
+    fields, err, hist, h('div',{class:'foot'},cancel,save)));
+  if (!db || !canWrite) save.disabled = true;
+  dlg.showModal();
+}
+
+function openLog(lead){
+  const dlg = $('#logDlg'); dlg.replaceChildren();
+  let target = lead || null;
+  const err = h('div',{class:'err',role:'alert'});
+  const pick = !target ? sel([['','Choose a lead...']].concat(leads.filter(active).sort((a,b)=>a.business.localeCompare(b.business)).map(l=>[l.id,l.business])),'') : null;
+  const how = sel(['Called','Emailed','Visited or walkthrough','Left a voicemail'],'Called');
+  const result = sel([['spoke','Spoke with someone'],['name','Got the contact name'],['none','No answer'],['interested','Interested, wants a quote'],['notnow','Not now'],['no','No thanks or remove']],'spoke');
+  const cn = h('input',{type:'text',autocomplete:'off'}), ct = h('input',{type:'text',autocomplete:'off'});
+  const ph = h('input',{type:'tel',autocomplete:'off'}), em = h('input',{type:'email',autocomplete:'off'});
+  const note = h('textarea',{placeholder:'What happened? Who did you talk to?'});
+  const nx = h('input',{type:'date'});
+  function fillFrom(l){ cn.value=l.contactName||''; ct.value=l.contactTitle||''; ph.value=l.phone||''; em.value=l.email||''; nx.value=nextDate((l.touches||0)+1,result.value); }
+  function setTarget(l){ target=l; if(l) fillFrom(l); }
+  if (target) fillFrom(target);
+  result.addEventListener('change',()=>{ if(target) nx.value = nextDate((target.touches||0)+1,result.value); });
+  if (pick) pick.addEventListener('change',()=>setTarget(leads.find(l=>l.id===pick.value)||null));
+  const save = h('button',{class:'btn sun',onclick:async()=>{
+    if (!target){ err.textContent='Choose which lead this is about.'; return; }
+    save.disabled=true;
+    const touches=(target.touches||0)+1, r=result.value;
+    const statusMap={spoke:'progress',name:'progress',none:'progress',interested:'quote',notnow:'notnow',no:'no'};
+    const resLabel=result.options[result.selectedIndex].text;
+    const text=how.value+'. '+resLabel+'.'+(note.value.trim()?' '+note.value.trim():'');
+    const notes=(target.notes||[]).concat([{date:todayStr(),text}]);
+    const data={ touches, status:statusMap[r], nextFollowUp:nx.value, notes, updatedAt:new Date().toISOString(),
+      contactName:cn.value.trim(), contactTitle:ct.value.trim(), phone:ph.value.trim(), email:em.value.trim() };
+    if (r==='no') data.nextFollowUp='';
+    try{ await db.collection('leads').doc(target.id).update(data); dlg.close(); toast('Logged for '+target.business); }
+    catch(e){ save.disabled=false; err.textContent = errText(e); }
+  }},'Save');
+  dlg.append(h('div',{class:'dlg'},
+    h('h2',{id:'logTitle'}, target ? 'Log contact: '+target.business : 'Log a call or email'),
+    h('p',{class:'sub'},'James sets the next follow-up for you. Change it if you want a different day.'),
+    h('div',{class:'fields'},
+      pick ? field('Which lead', pick, {full:true}) : null,
+      field('What did you do', how), field('How did it go', result),
+      field('Contact name', cn, {hint:'Add or fix it here'}), field('Their title', ct),
+      field('Direct phone', ph), field('Direct email', em),
+      field('Next follow-up', nx), h('div',{}),
+      field('Note', note, {full:true})),
+    err, h('div',{class:'foot'}, h('button',{class:'btn',onclick:()=>dlg.close()},'Cancel'), save)));
+  if (!db || !canWrite) save.disabled = true;
+  dlg.showModal();
+}
+
+/* ---------- morning meeting ---------- */
+let meetingOpen = false;
+const plural = (n, one, many) => n + ' ' + (n===1 ? one : many);
+function nameList(arr){
+  if (arr.length<=1) return arr.join('');
+  return arr.slice(0,-1).join(', ') + ' and ' + arr[arr.length-1];
+}
+function meetingScript(){
+  const act = leads.filter(active);
+  const t = todayStr();
+  const due = dueList();
+  const overdue = act.filter(l=>l.nextFollowUp && l.nextFollowUp<t).length;
+  const byScore = act.slice().sort((a,b)=>score(b)-score(a));
+  const noName = byScore.filter(l=>!l.contactName);
+  const noEmail = act.filter(l=>!l.email).length;
+  const waiting = act.filter(l=>(l.touches||0)===0 && l.status==='new').length;
+  const unknownSize = act.filter(l=>l.lane==='janitorial' && !l.space).length;
+  const outside = leads.filter(l=>active(l) && (area(l)==='out' || (l.lane==='janitorial' && area(l)==='outer'))).length;
+  const found = act.filter(l=>l.source==='Scout').length;
+  const top = due[0];
+
+  const scout = {
+    who:'Scout',
+    say: act.length
+      ? 'Morning, team. We have '+plural(act.length,'active lead','active leads')+' on the board, and I found '+found+' of them. '+(noName.length ? plural(noName.length,'lead still has','leads still have')+' no contact name.' : 'Every lead has a contact name.')
+      : 'Morning, team. The board is empty, so I am ready to start filling it.',
+    next:'Next I am looking for more medical offices, law offices, and exhibit builders inside the nightly route area, plus property managers across the valley. Gil can ask for a fresh batch whenever you want more.',
+    help: noName.length ? 'Kesia, could you find the contact name at '+nameList(noName.slice(0,3).map(l=>l.business))+'? Call the main number and ask who schedules cleaning, then add it with the Log button.' : ''
+  };
+  const lucy = {
+    who:'Lucy',
+    say: top
+      ? 'My number one today is '+top.business+', with a score of '+score(top)+'.'+(outside ? ' I am holding back '+plural(outside,'lead','leads')+' that sit outside the right service area.' : '')
+      : 'Nothing is due today. Add a lead and I will rank it.',
+    next:'I re-rank the list every time you add a name, phone, or email, because leads we can reach easily score highest.',
+    help: unknownSize ? 'I do not know how big the space is for '+plural(unknownSize,'office lead','office leads')+'. If you learn it on a call, tell me small, medium, or large when you edit the lead.' : ''
+  };
+  const jan = {
+    who:'Jan',
+    say: waiting
+      ? plural(waiting,'lead has','leads have')+' not had a first message yet. Nothing goes out until Gil approves it.'
+      : 'Every lead has had a first message. Nothing goes out until Gil approves it.',
+    next:'Next I will write the day 4 follow-up emails and a short phone script so your calls feel easy.',
+    help: noEmail ? plural(noEmail,'lead has','leads have')+' no email, so I can only write to them once you get one. A direct email from a call is worth a lot to me.' : ''
+  };
+  const james = {
+    who:'James',
+    say: due.length
+      ? plural(due.length,'follow-up is','follow-ups are')+' due today'+(overdue ? ', and '+overdue+' of them are late.' : '.')
+      : 'No follow-ups are due today, so we are on schedule.',
+    next:'When you log a call, I set the next date: day 4, day 8, day 14, then every three months. Anyone who says no is never contacted again.',
+    help: due.length ? 'Please log each call as soon as you finish it, even when nobody answered, so my dates stay right.' : ''
+  };
+  const people = [scout, lucy, jan, james];
+  const todo = due.slice(0,3).map(l=>{
+    const bits = ['Call '+l.business];
+    if (l.phone) bits.push('at '+l.phone);
+    const why = l.contactName ? 'Ask for '+l.contactName+'.' : 'Ask who schedules cleaning.';
+    return bits.join(' ')+'. '+why;
+  });
+  return {people, todo};
+}
+
+function renderMeeting(){
+  const body = $('#mtgBody'), tg = $('#mtgToggle');
+  tg.textContent = meetingOpen ? 'End the meeting' : 'Start the meeting';
+  tg.setAttribute('aria-expanded', String(meetingOpen));
+  const canSpeak = 'speechSynthesis' in window;
+  $('#mtgHear').hidden = !(meetingOpen && canSpeak);
+  $('#mtgStop').hidden = !(meetingOpen && canSpeak);
+  body.hidden = !meetingOpen;
+  if (!meetingOpen) return;
+  body.replaceChildren();
+  if (!loaded){ body.append(h('div',{class:'empty'},'The team is finding their seats.')); return; }
+  const m = meetingScript();
+  const tiles = h('div',{class:'tiles',role:'group','aria-label':'Meeting participants'});
+  for (const p of m.people){
+    const cfg = TEAM.find(x=>x.name===p.who);
+    tiles.append(h('button',{class:'tile','data-who':p.who,title:'Hear '+p.who,onclick:()=>speakParts([{who:p.who,text:p.say+' '+p.next+(p.help?' '+p.help:'')}])},
+      h('div',{class:'tpic',html:face(cfg)}), h('span',{class:'cap'}, p.who)));
+  }
+  const initials = (meName||'You').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  tiles.append(h('div',{class:'tile you'}, h('div',{class:'ini'},initials), h('span',{class:'cap'}, (meName ? meName.split(' ')[0] : 'You')+' (you)')));
+  body.append(tiles);
+  for (const p of m.people){
+    const cfg = TEAM.find(x=>x.name===p.who);
+    body.append(h('div',{class:'turn'},
+      h('div',{class:'mt-av',html:face(cfg)}),
+      h('div',{},
+        h('h3',{}, cfg.full, canSpeak ? h('button',{class:'btn hear',onclick:()=>speakParts([{who:p.who,text:p.say+' '+p.next+(p.help?' '+p.help:'')}])},'Hear '+p.who) : null),
+        h('div',{class:'role'},cfg.title),
+        h('p',{}, p.say),
+        h('p',{class:'nextline'}, p.next),
+        p.help ? h('div',{class:'ask'}, h('b',{},'Needs your help'), p.help) : h('div',{class:'ok'},'Nothing needed from you right now.')
+      )));
+  }
+  body.append(h('div',{class:'today3'}, h('h3',{},'Your top calls today'),
+    m.todo.length ? h('ol',{}, m.todo.map(x=>h('li',{},x))) : h('p',{style:'margin:0'},'No calls are due. Add a lead or check back tomorrow.')));
+}
+
+/* spoken voices: uses the device's own voices, so they vary by phone or computer */
+const VOICE_STYLE = { Scout:{pitch:1.1,rate:1.05,i:0}, Lucy:{pitch:1.05,rate:1,i:1}, Jan:{pitch:1.25,rate:.95,i:2}, James:{pitch:.8,rate:1,i:3} };
+function speakParts(parts){
+  try{
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const vs = speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+    for (const p of parts){
+      const u = new SpeechSynthesisUtterance(p.who+' here. '+p.text);
+      const st = VOICE_STYLE[p.who];
+      if (vs.length) u.voice = vs[st.i % vs.length];
+      u.pitch = st.pitch; u.rate = st.rate;
+      u.onstart = function(){ document.querySelectorAll('.tile.talking').forEach(t=>t.classList.remove('talking')); const t=document.querySelector('.tile[data-who="'+p.who+'"]'); if(t) t.classList.add('talking'); };
+      u.onend = u.onerror = function(){ const t=document.querySelector('.tile[data-who="'+p.who+'"]'); if(t) t.classList.remove('talking'); };
+      speechSynthesis.speak(u);
+    }
+  }catch(e){ toast('Voices are not available on this device.'); }
+}
+
+/* ---------- wiring ---------- */
+$('#addPM').addEventListener('click',()=>openLead({lane:'pm'}));
+$('#addOffice').addEventListener('click',()=>openLead({lane:'janitorial'}));
+$('#logAny').addEventListener('click',()=>openLog(null));
+$('#gearBtn').addEventListener('click',()=>{ renderAdmin(); $('#adminDlg').showModal(); });
+$('#mtgToggle').addEventListener('click',()=>{ meetingOpen=!meetingOpen; if(!meetingOpen){ try{speechSynthesis.cancel();}catch(e){} } renderMeeting(); });
+$('#mtgHear').addEventListener('click',()=>{ const m=meetingScript(); speakParts(m.people.map(p=>({who:p.who,text:p.say+' '+p.next+(p.help?' '+p.help:'')}))); });
+$('#mtgStop').addEventListener('click',()=>{ try{speechSynthesis.cancel();}catch(e){} document.querySelectorAll('.tile.talking').forEach(t=>t.classList.remove('talking')); });
+$('#search').addEventListener('input',e=>{ query=e.target.value; renderTable(); });
+for (const d of document.querySelectorAll('dialog')) d.addEventListener('click',e=>{ if(e.target===d) d.close(); });
+
+function setConn(on, text){ $('#dot').className='dot'+(on?'':' off'); $('#saveText').textContent=text; }
+function greet(name){
+  const hr = new Date().getHours();
+  const part = hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  $('#greeting').textContent = part + (name?', '+name.split(' ')[0]:'') + '. Here is where things stand.';
+}
+function setButtons(){ for (const id of ['#addPM','#addOffice','#logAny']) $(id).disabled = !(db && canWrite); }
+
+function renderAdmin(){
+  const gear = $('#gearBtn'), dlg = $('#adminDlg');
+  gear.hidden = (role!=='Admin');
+  if (role!=='Admin'){ if (dlg.open) dlg.close(); return; }
+  const wrap = h('div',{class:'dlg'});
+  wrap.append(h('div',{style:'display:flex;justify-content:space-between;align-items:flex-start;gap:12px'},
+    h('div',{}, h('h2',{id:'adminTitle'},'Team access'),
+      h('p',{class:'sub'},'Only Admins see this. Choose who can sign in and what they can do. When someone leaves, set them to inactive here and suspend their Google Workspace account too.')),
+    h('button',{class:'btn',onclick:()=>dlg.close()},'Close')));
+  const body = h('tbody',{});
+  for (const u of users){
+    const r = sel(['Admin','Staff','Viewer'], u.role);
+    const act = h('input',{type:'checkbox',checked:u.active,'aria-label':'Active'});
+    const b = h('button',{class:'btn',onclick:()=>{
+      b.disabled = true;
+      callServer('saveUser',{email:u.email,name:u.name,role:r.value,active:act.checked}).then(applyState).then(()=>toast('Saved: '+u.email)).catch(e=>{ b.disabled=false; toast(errText(e)); });
+    }},'Save');
+    body.append(h('tr',{}, h('td',{}, h('div',{style:'font-weight:700'},u.name||u.email), h('div',{class:'small'},u.email)), h('td',{},r), h('td',{},act), h('td',{},b)));
+  }
+  wrap.append(h('div',{class:'tablewrap'}, h('table',{style:'min-width:520px'},
+    h('thead',{},h('tr',{},['Person','Role','Active',''].map(x=>h('th',{scope:'col'},x)))), body)));
+  const ne = h('input',{type:'email',placeholder:'name@wecleanlasvegas.com',autocomplete:'off'});
+  const nn = h('input',{type:'text',placeholder:'Full name',autocomplete:'off'});
+  const nr = sel(['Staff','Viewer','Admin'],'Staff');
+  const add = h('button',{class:'btn solid',onclick:()=>{
+    add.disabled = true;
+    callServer('saveUser',{email:ne.value,name:nn.value,role:nr.value,active:true}).then(applyState).then(()=>toast('Added')).catch(e=>{ add.disabled=false; toast(errText(e)); });
+  }},'Add person');
+  wrap.append(h('h3',{style:'margin:16px 0 8px;font-size:18px'},'Add a person'),
+    h('div',{class:'fields'}, field('Company email',ne), field('Name',nn), field('Role',nr), h('div',{style:'display:flex;align-items:end'},add)));
+  wrap.append(h('h3',{style:'margin:18px 0 8px;font-size:18px'},'Recent activity'));
+  if (!activity.length) wrap.append(h('div',{class:'small'},'Nothing yet.'));
+  const list = h('div',{class:'history',style:'max-height:200px'});
+  for (const a of activity){
+    const when = a.time ? new Date(a.time).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+    list.append(h('div',{}, h('strong',{}, when+': '), (a.email||'').split('@')[0]+' '+(a.action||'').toLowerCase()+(a.detail?' ('+a.detail+')':'')));
+  }
+  wrap.append(list);
+  dlg.replaceChildren(wrap);
+}
+
+function poll(){
+  if (document.querySelector('dialog[open]')) return;
+  const ae = document.activeElement;
+    callServer('getState').then(applyState).catch(function(){});
+}
+
+render(); greet('');
+setButtons();
+if (typeof google==='undefined' || !google.script || !google.script.run){
+  setConn(false,'Open this page from its Google link'); loaded = true; render();
+} else {
+  callServer('getState').then(applyState).catch(function(e){ loaded = true; setConn(false,'Could not reach the Matrix'); render(); });
+  setInterval(poll, 45000);
+}
+})();
+</script>
+</body>
+</html>
